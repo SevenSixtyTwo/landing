@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,32 +8,22 @@ import (
 	"strings"
 )
 
+var port = ":8080"
+
 var pagesPath = "./out/"
 
-// FSHandler404 provides the function signature for passing to the FileServerWith404
 type FSHandler404 = func(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool)
 
-/*
-FileServerWith404 wraps the http.FileServer checking to see if the url path exists first.
-If the file fails to exist it calls the supplied FSHandle404 function
-The implementation can choose to either modify the request, e.g. change the URL path and return true to have the
-default FileServer handling to still take place, or return false to stop further processing, for example if you wanted
-to write a custom response
-e.g. redirects to root and continues the file serving handler chain
-	func fileSystem404(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool) {
-		//if not found redirect to /
-		r.URL.Path = "/"
-		return true
-	}
-Use the same as you would with a http.FileServer e.g.
-	r.Handle("/", http.StripPrefix("/", mw.FileServerWith404(http.Dir("./staticDir"), fileSystem404)))
-*/
+func fileSystem404(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool) {
+	//if not found redirect to /missing.html
+	http.Redirect(w, r, "/missing.html", http.StatusFound)
+	return true
+}
 
 func FileServerWith404(root http.FileSystem, handler404 FSHandler404) http.Handler {
 	fs := http.FileServer(root)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// make sure the url path starts with '/'
 		upath := r.URL.Path
 		if !strings.HasPrefix(upath, "/") {
 			upath = "/" + upath
@@ -42,33 +31,29 @@ func FileServerWith404(root http.FileSystem, handler404 FSHandler404) http.Handl
 		}
 		upath = path.Clean(upath)
 
-		// attempt to open the file via th http.FileSystem
 		f, err := root.Open(upath)
 		if err != nil {
 			if os.IsNotExist(err) {
-				// call handler
 				if handler404 != nil {
-					doDefault := handler404(w, r)
-					if !doDefault {
+					if doDefault := handler404(w, r); !doDefault {
 						return
 					}
 				}
 			}
 		}
 
-		// close if successfuly opened
 		if err == nil {
 			f.Close()
 		}
 
-		// defalt serve
 		fs.ServeHTTP(w, r)
 	})
 }
 
 func main() {
-	fmt.Println("Server is running")
+	fs := FileServerWith404(http.Dir(pagesPath), fileSystem404)
+	http.Handle("/", fs)
 
-	http.Handle("/", http.FileServer(http.Dir(pagesPath)))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("listening on %s", port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }
