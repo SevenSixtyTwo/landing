@@ -11,12 +11,13 @@ import (
 var port = ":8080"
 
 var pagesPath = "./out/"
+var page404 = "/missing.html"
 
 type FSHandler404 = func(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool)
 
 func fileSystem404(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool) {
 	//if not found redirect to /missing.html
-	http.Redirect(w, r, "/missing.html", http.StatusFound)
+	http.Redirect(w, r, page404, http.StatusFound)
 	return true
 }
 
