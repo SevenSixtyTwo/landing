@@ -23,4 +23,6 @@ USER nonroot
 COPY --from=build /app/server/web /web/
 COPY --from=build /app/runs/program .
 
+EXPOSE 80
+
 CMD ["./program"]
