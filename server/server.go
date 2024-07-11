@@ -10,7 +10,7 @@ import (
 
 var port = ":8080"
 
-var pagesPath = "./out/"
+var pagesPath = "./web/"
 var page404 = "/missing.html"
 
 type FSHandler404 = func(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool)
