@@ -51,10 +51,33 @@
       <p>Факс: 8 902 799 13 85</p>
       <p>Адрес производственной площадки: 618900, Пермский край, г. Лысьва, ул. Багратиона 50</p>
     </section>
+
+    <div class="container">
+      <form action="action_page.php">
+    
+        <label for="fname">Ваше ФИО</label>
+        <input type="text" id="name" name="contactName" placeholder="Ваше ФИО...">
+    
+        <label for="lname">Ваша компания</label>
+        <input type="text" id="company" name="contactCompany" placeholder="Ваша компания...">
+    
+        <label for="lname">Ваша электронная почта</label>
+        <input type="text" id="mail" name="contactMail" placeholder="Ваша электронная почта...">
+
+        <label for="lname">Ваш номер телефона</label>
+        <input type="text" id="phone" name="contactPhone" placeholder="Ваш номер телефона...">
+    
+        <label for="subject">Ваш комментарий</label>
+        <textarea id="subject" name="subject" placeholder="Ваш комментарий..." style="height:200px"></textarea>
+    
+        <input type="submit" value="Отправить">
+    
+      </form>
+    </div> 
   </main>
 
   <footer>
-    <p>&copy; ООО «ЭНЕРГОСФЕРА» 2024. Все права защищены.</p>
+    <p>&copy; ООО «ЭНЕРГОСФЕРА» 2024</p>
   </footer>
 
 </body>
