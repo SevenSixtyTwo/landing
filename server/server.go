@@ -10,7 +10,7 @@ import (
 
 var port = ":8080"
 
-var pagesPath = "./web/"
+var pagesPath = "./static/"
 var page404 = "/missing.html"
 
 type FSHandler404 = func(w http.ResponseWriter, r *http.Request) (doDefaultFileServe bool)
@@ -54,6 +54,10 @@ func FileServerWith404(root http.FileSystem, handler404 FSHandler404) http.Handl
 func main() {
 	fs := FileServerWith404(http.Dir(pagesPath), fileSystem404)
 	http.Handle("/", fs)
+
+	// http.Handle("/", http.FileServer(http.Dir(pagesPath)))
+
+	// http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	log.Printf("listening on %s", port)
 	log.Fatal(http.ListenAndServe(port, nil))

@@ -23,6 +23,8 @@ USER nonroot
 COPY --from=build /app/server/web /web/
 COPY --from=build /app/runs/program .
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["./program"]
+
+# -it => -interactive + -tty

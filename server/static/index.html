@@ -53,32 +53,50 @@
     </section>
 
     <div class="container">
-      <form action="action_page.php">
-    
-        <label for="fname">Ваше ФИО</label>
-        <input type="text" id="name" name="contactName" placeholder="Ваше ФИО...">
-    
-        <label for="lname">Ваша компания</label>
-        <input type="text" id="company" name="contactCompany" placeholder="Ваша компания...">
-    
-        <label for="lname">Ваша электронная почта</label>
-        <input type="text" id="mail" name="contactMail" placeholder="Ваша электронная почта...">
+      <form name="custom_form" onsubmit="return false">
+        <div class="input-row">
+          <label for="namee">Имя</label>
+          <input type="text" id="namee" name="namee" placeholder="Ваше имя...">
+          <!-- <span class="error">Пожалуйста, введите ваше имя</span> -->
+        </div>
 
-        <label for="lname">Ваш номер телефона</label>
-        <input type="text" id="phone" name="contactPhone" placeholder="Ваш номер телефона...">
-    
-        <label for="subject">Ваш комментарий</label>
-        <textarea id="subject" name="subject" placeholder="Ваш комментарий..." style="height:200px"></textarea>
-    
-        <input type="submit" value="Отправить">
-    
+        <div class="input-row">
+          <label for="company">Компания</label>
+          <input type="text" id="company" name="company" placeholder="Ваша компания...">
+        </div>
+
+        <div class="input-row">
+          <label for="mail">Электронная почта</label>
+          <input type="text" id="mail" name="mail" placeholder="Ваша электронная почта...">
+          <!-- <span class="error">Пожалуйста, введите вашу почту или номер телефона</span> -->
+        </div>
+
+        <div class="input-row">
+          <label for="phone">Телефон</label>
+          <input type="text" id="phone" name="phone" placeholder="Ваш номер телефона...">
+          <!-- <span class="error">Пожалуйста, введите вашу почту или номер телефона</span> -->
+        </div>
+
+        <div class="input-row">
+          <label for="message">Комментарий</label>
+          <textarea id="message" name="message" placeholder="Ваш комментарий..." style="height:200px"></textarea>
+        </div>
+
+        <div class="input-row">
+          <label class="check_label" for="conditions">Я согласен с политикой обработки персональных данных</label>
+          <input type="checkbox" name="conditions" id="conditions">
+          <!-- <span class="error">Примите согласие с политикой обработки персональных данных</span> -->
+        </div>
+
       </form>
     </div> 
+    <button type="button" onclick="sendForm();">Отправить</button>
   </main>
 
   <footer>
     <p>&copy; ООО «ЭНЕРГОСФЕРА» 2024</p>
   </footer>
-
+  
+  <script src="form.js"></script>
 </body>
 </html>
