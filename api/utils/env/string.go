@@ -11,4 +11,3 @@ func LoadStrVar(variable *string, name string) {
 		panic(fmt.Errorf("`%s` environment not declare", name))
 	}
 }
-
