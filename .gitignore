@@ -13,4 +13,12 @@
 
 db/*
 
-secrets/*
+secrets/
+
+.air.toml
+
+.vscode/
+
+tmp/
+
+bin/
