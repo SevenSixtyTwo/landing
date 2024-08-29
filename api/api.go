@@ -116,7 +116,7 @@ func main() {
 		Skipper: middleware.DefaultSkipper,
 		// Defines a store for a rate limiter
 		Store: middleware.NewRateLimiterMemoryStoreWithConfig(
-			middleware.RateLimiterMemoryStoreConfig{Rate: rate.Limit(10), Burst: 30, ExpiresIn: 3 * time.Minute},
+			middleware.RateLimiterMemoryStoreConfig{Rate: rate.Limit(2), Burst: 10, ExpiresIn: 10 * time.Minute},
 		),
 		// Uses echo.Context to extract the identifier for a visitor
 		IdentifierExtractor: func(ctx echo.Context) (string, error) {
