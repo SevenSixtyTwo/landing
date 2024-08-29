@@ -19,7 +19,8 @@ import (
 type (
 	SmtpContext struct {
 		echo.Context
-		smtp *smtp.SmtpMail
+		smtp     *smtp.SmtpMail
+		smtpBase *smtp.SmtpBase
 	}
 
 	SubmittedForm struct {
@@ -34,41 +35,10 @@ type (
 	}
 )
 
-func sendForm(form *SubmittedForm, mail *smtp.SmtpMail) error {
+func sendForm(form *SubmittedForm, mail *smtp.SmtpMail, base *smtp.SmtpBase) error {
 	mail_body := fmt.Sprintf("Имя: %s\r\nКомпания: %s\r\nEmail: %s\r\nТелефон: %s\r\nКомментарий: %s\r\nДата отправки: %s", form.Name, form.Company, form.Email, form.Phone, form.Comment, form.CreationDate)
 
-	// Setup message
-	mail_message := ""
-	for k, v := range mail.Headers {
-		mail_message += fmt.Sprintf("%s: %s\r\n", k, v)
-	}
-	mail_message += "\r\n" + mail_body
-
-	// To & From
-	if err := mail.Client.Mail(mail.From.Address); err != nil {
-		return err
-	}
-
-	for _, addr := range mail.To {
-		if err := mail.Client.Rcpt(addr.Address); err != nil {
-			return err
-		}
-	}
-
-	// Data
-	mail_writer, err := mail.Client.Data()
-	if err != nil {
-		return err
-	}
-
-	_, err = mail_writer.Write([]byte(mail_message))
-	if err != nil {
-		return err
-	}
-
-	if err = mail_writer.Close(); err != nil {
-		return err
-	}
+	smtp.SendMail(mail_body, mail, base)
 
 	return nil
 }
@@ -120,7 +90,7 @@ func submitForm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, form)
 	}
 
-	if err := sendForm(form, cc.smtp); err != nil {
+	if err := sendForm(form, cc.smtp, cc.smtpBase); err != nil {
 		log.Printf("send form: %s", err)
 	}
 
@@ -168,7 +138,7 @@ func main() {
 
 	e.Use(func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			cc := &SmtpContext{c, smtpMail}
+			cc := &SmtpContext{c, smtpMail, smtpBase}
 			return h(cc)
 		}
 	})
