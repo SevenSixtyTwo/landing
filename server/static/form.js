@@ -84,14 +84,18 @@ function sendForm(){
       headers: {
         "Content-type": "application/json; charset=UTF-8"
       }
-    });      
-
-    alert("заявка успешно отправлена")
+    })
+      .then((response => {
+        if  (response.ok) {
+          alert(`заявка успешно отправлена`);
+        } else {
+          alert(`ошибка отправки формы, попробуйте позже`);
+        }
+      }))
+      .catch((error) => {
+        alert(`ошибка отправки формы, попробуйте позже`);        
+      });      
   } else {
-    alert("ошибка")
+    alert("форма заполнена не верно");
   }
-}
-
-function test() {
-  console.log("test");
 }
