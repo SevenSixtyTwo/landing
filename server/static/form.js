@@ -71,7 +71,7 @@ function sendForm(){
       conditions.checked,
       message.value);
     
-    fetch("http://localhost:3000/submit", {
+    fetch("http://localhost:3030/submit", {
       method: "POST",
       body: JSON.stringify({
         name: contact_form.namee,
