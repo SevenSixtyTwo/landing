@@ -82,7 +82,12 @@ func submitForm(c echo.Context) error {
 		return err
 	}
 
-	current_time := time.Now().Format("15:04 02.01.2006")
+	loc, err := time.LoadLocation("Asia/Yekaterinburg")
+	if err != nil {
+		log.Printf("loadlocation error: %s", err)
+	}
+
+	current_time := time.Now().In(loc).Format("15:04 02.01.2006")
 	form.CreationDate = current_time
 
 	if err := validateForm(form); err != nil {
