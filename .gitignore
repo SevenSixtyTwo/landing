@@ -10,3 +10,15 @@
 ### Above combination will ignore all files without extension ###
 
 !Dockerfile
+
+db/*
+
+secrets/
+
+.air.toml
+
+.vscode/
+
+tmp/
+
+bin/

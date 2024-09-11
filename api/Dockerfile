@@ -11,7 +11,7 @@ RUN GO111ENABLED=on \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64 \
-    go -C "server/" build -ldflags "-s -w" -o /app/runs/program
+    go -C "api/" build -ldflags "-s -w" -o /app/runs/program
 
 
 FROM scratch
@@ -20,9 +20,15 @@ COPY --from=build /etc/passwd /etc/passwd
 
 USER nonroot
 
-COPY --from=build /app/server/web /web/
+COPY --from=build /app/api/secrets /secrets/
 COPY --from=build /app/runs/program .
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["./program"]
+
+# -it => -interactive + -tty
+
+# docker run -u 
+# docker run --read-only --security-opt=no-new-privileges  --cap-drop all --cap-add CHOWN alpine
+# docker run --read-only --security-opt=no-new-privileges --expose 8080 server
