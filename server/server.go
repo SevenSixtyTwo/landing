@@ -26,11 +26,12 @@ func FileServerWith404(root http.FileSystem, handler404 FSHandler404) http.Handl
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		upath := r.URL.Path
+		upath = path.Clean(upath)
+
 		if !strings.HasPrefix(upath, "/") {
 			upath = "/" + upath
 			r.URL.Path = upath
 		}
-		upath = path.Clean(upath)
 
 		f, err := root.Open(upath)
 		if err != nil {
@@ -54,10 +55,6 @@ func FileServerWith404(root http.FileSystem, handler404 FSHandler404) http.Handl
 func main() {
 	fs := FileServerWith404(http.Dir(pagesPath), fileSystem404)
 	http.Handle("/", fs)
-
-	// http.Handle("/", http.FileServer(http.Dir(pagesPath)))
-
-	// http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	log.Printf("listening on %s", port)
 	log.Fatal(http.ListenAndServe(port, nil))
