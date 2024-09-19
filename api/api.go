@@ -29,11 +29,11 @@ type (
 	SubmittedForm struct {
 		ID           int
 		Name         string `json:"name" validate:"alpha"`
-		Company      string `json:"company"`
+		Company      string `json:"companyName"`
 		Email        string `json:"email" validate:"required,email"`
 		Phone        string `json:"phone"`
-		Comment      string `json:"comment"`
-		IsAgree      bool   `json:"isAgree"`
+		Comment      string `json:"message"`
+		IsAgree      bool   `json:"agreeToTerms"`
 		CreationDate string `json:"creationDate"`
 	}
 )
