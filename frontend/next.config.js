@@ -6,6 +6,4 @@ const nextConfig = {
     },
   }
   
-  module.exports = {
-    distDir: 'out'
-  }
+  module.exports = nextConfig
