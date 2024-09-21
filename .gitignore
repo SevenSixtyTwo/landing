@@ -24,3 +24,5 @@ tmp/
 bin/
 
 backup/
+
+out/
