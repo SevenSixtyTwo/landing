@@ -23,6 +23,25 @@ import uer from '../public/partners/uer.png'
 import cumprivod from '../public/partners/cumprivod.png'
 import cummashservice from '../public/partners/cummashservice.svg'
 
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  companyName: string;
+  message: string;
+  agreeToTerms: boolean;
+}
+
+interface FormErrors {
+  name: string;
+  email: string;
+  phone: string;
+  companyName: string;
+  message: string;
+  agreeToTerms: string;
+  contactMethod: string;
+}
+
 interface ToastProps {
   message: string;
   type: 'success' | 'error';
@@ -77,7 +96,7 @@ export function LandingPageComponent() {
     setIsMenuOpen(false)
   }
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
@@ -86,7 +105,7 @@ export function LandingPageComponent() {
     agreeToTerms: false
   })
 
-  const [formErrors, setFormErrors] = useState({
+  const [formErrors, setFormErrors] = useState<FormErrors>({
     name: '',
     email: '',
     phone: '',
@@ -96,14 +115,29 @@ export function LandingPageComponent() {
     contactMethod: ''
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | 
+    { target: { name: string; value?: string; type?: string; checked?: boolean } }
+  ) => {
+    const target = e.target as { name: string; value?: string; type?: string; checked?: boolean };
+    const { name, value, type, checked } = target;
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }))
-    validateField(name, type === 'checkbox' ? (e.target as HTMLInputElement).checked : value)
-  }
+      [name]: type === 'checkbox' ? !!checked : value ?? ''
+    }));
+    
+    validateField(name, type === 'checkbox' ? !!checked : value ?? '');
+  };
+
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value?: string; type?: string; checked?: boolean } }) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     [name]: type === 'checkbox' ? !!checked : value
+  //   }));
+  //   validateField(name, type === 'checkbox' ? !!checked : value);
+  // };
 
   const validateField = (name: string, value: string | boolean) => {
     let error = ''
@@ -111,36 +145,75 @@ export function LandingPageComponent() {
       case 'name':
         if (typeof value === 'string' && !value.trim()) error = 'Необходимо ваше имя'
         break
-        case 'email':
-          if (typeof value === 'string' && value && !/\S+@\S+\.\S+/.test(value)) {
-            error = 'Некорректный адрес эл. почты'
-          }
-          break
-        case 'phone':
-          if (typeof value === 'string' && value && !/^\+?[1-9]\d{1,14}$/.test(value)) {
-            error = 'Некорректный номер телефона'
-          }
-          break
-        case 'agreeToTerms':
-          if (!value) error = 'Вы должны принять согласие на обработку персональных данных'
-          break
-        default:
-          break
-      }
-      setFormErrors(prev => ({ ...prev, [name]: error }))
-  
-      if (name === 'email' || name === 'phone') {
-        const otherField = name === 'email' ? 'phone' : 'email'
-        const otherValue = formData[otherField as 'email' | 'phone']
-        if (!value && !otherValue) {
-          setFormErrors(prev => ({ ...prev, contactMethod: 'Необходим телефонный номер или адрес эл. почты' }))
-        } else {
-          setFormErrors(prev => ({ ...prev, contactMethod: '' }))
+      case 'email':
+        if (typeof value === 'string' && value && !/\S+@\S+\.\S+/.test(value)) {
+          error = 'Некорректный адрес эл. почты'
         }
+        break
+      case 'phone':
+        if (typeof value === 'string' && value && !/^\+?[1-9]\d{1,14}$/.test(value)) {
+          error = 'Некорректный номер телефона'
+        }
+        break
+      case 'message':
+        if (typeof value === 'string' && !value.trim()) error = 'Необходимо указать, по какому вопросу вы к нам обращаетесь'
+        break
+      case 'agreeToTerms':
+        if (typeof value === 'boolean' && !value) error = 'Вы должны принять согласие на обработку персональных данных'
+        break
+      default:
+        break
+    }
+    setFormErrors(prev => ({ ...prev, [name]: error }))
+  
+    if (name === 'email' || name === 'phone') {
+      const otherField = name === 'email' ? 'phone' : 'email'
+      const otherValue = formData[otherField as keyof typeof formData]
+      if (!value && !otherValue) {
+        setFormErrors(prev => ({ ...prev, contactMethod: 'Необходим телефонный номер или адрес эл. почты' }))
+      } else {
+        setFormErrors(prev => ({ ...prev, contactMethod: '' }))
       }
     }
+  }
+
+  // const validateField = (name: string, value: string | boolean) => {
+  //   let error = ''
+  //   switch (name) {
+  //     case 'name':
+  //       if (typeof value === 'string' && !value.trim()) error = 'Необходимо ваше имя'
+  //       break
+  //     case 'email':
+  //       if (typeof value === 'string' && value && !/\S+@\S+\.\S+/.test(value)) {
+  //         error = 'Некорректный адрес эл. почты'
+  //       }
+  //       break
+  //     case 'phone':
+  //       if (typeof value === 'string' && value && !/^\+?[1-9]\d{1,14}$/.test(value)) {
+  //         error = 'Некорректный номер телефона'
+  //       }
+  //       break
+  //     case 'agreeToTerms':
+  //       if (!value) error = 'Вы должны принять согласие на обработку персональных данных'
+  //       break
+  //     default:
+  //       break
+  //   }
+  //   setFormErrors(prev => ({ ...prev, [name]: error }))
+
+  //   if (name === 'email' || name === 'phone') {
+  //     const otherField = name === 'email' ? 'phone' : 'email'
+  //     const otherValue = formData[otherField as 'email' | 'phone']
+  //     if (!value && !otherValue) {
+  //       setFormErrors(prev => ({ ...prev, contactMethod: 'Необходим телефонный номер или адрес эл. почты' }))
+  //     } else {
+  //       setFormErrors(prev => ({ ...prev, contactMethod: '' }))
+  //     }
+  //   }
+  // };
+    
   
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const isValid = Object.values(formErrors).every(error => !error) &&
                     formData.name.trim() &&
@@ -171,7 +244,7 @@ export function LandingPageComponent() {
     } else {
       Object.keys(formData).forEach(key => validateField(key, formData[key as keyof typeof formData]))
     }
-  }
+  };
 
   const skeuomorphicButton = `
     relative overflow-hidden bg-gradient-to-b from-yellow-400 to-yellow-500
@@ -557,7 +630,7 @@ export function LandingPageComponent() {
                       id="agreeToTerms"
                       name="agreeToTerms"
                       checked={formData.agreeToTerms}
-                      onCheckedChange={(checked) => handleInputChange({ target: { name: 'agreeToTerms', type: 'checkbox', checked } })}
+                      onCheckedChange={(checked: boolean) => handleInputChange({ target: { name: 'agreeToTerms', type: 'checkbox', checked } })}
                       className="border-2 border-yellow-400 text-yellow-400 focus:ring-yellow-400"
                     />
                     <label
