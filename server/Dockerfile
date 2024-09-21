@@ -20,7 +20,7 @@ COPY --from=build /etc/passwd /etc/passwd
 
 USER nonroot
 
-COPY --from=build /app/server/static /static/
+COPY --from=build /app/server/out /out/
 COPY --from=build /app/runs/program .
 
 EXPOSE 8080
