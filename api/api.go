@@ -28,7 +28,7 @@ type (
 
 	SubmittedForm struct {
 		ID           int
-		Name         string `json:"name" validate:"alpha"`
+		Name         string `json:"name"`
 		Company      string `json:"companyName"`
 		Email        string `json:"email" validate:"required,email"`
 		Phone        string `json:"phone"`
@@ -92,13 +92,7 @@ func submitForm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, form)
 	}
 
-	loc, err := time.LoadLocation("Asia/Yekaterinburg")
-	if err != nil {
-		log.Printf("loadlocation error: %s", err)
-		return c.JSON(http.StatusInternalServerError, form)
-	}
-
-	current_time := time.Now().In(loc).Format("15:04 02.01.2006")
+	current_time := time.Now().Add(time.Hour * 5).Format("15:04 02.01.2006")
 	form.CreationDate = current_time
 
 	if err := validateForm(form); err != nil {
