@@ -13,6 +13,10 @@ RUN GO111ENABLED=on \
     GOARCH=amd64 \
     go -C "server/" build -ldflags "-s -w" -o /app/runs/program
 
+RUN apk add --update nodejs npm && \
+    cd server/frontend && \
+    npm install && \
+    npm run build
 
 FROM scratch
 
@@ -20,7 +24,7 @@ COPY --from=build /etc/passwd /etc/passwd
 
 USER nonroot
 
-COPY --from=build /app/server/out /out/
+COPY --from=build /app/server/frontend/out /out/
 COPY --from=build /app/runs/program .
 
 EXPOSE 8080
