@@ -130,15 +130,6 @@ export function LandingPageComponent() {
     validateField(name, type === 'checkbox' ? !!checked : value ?? '');
   };
 
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value?: string; type?: string; checked?: boolean } }) => {
-  //   const { name, value, type, checked } = e.target;
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     [name]: type === 'checkbox' ? !!checked : value
-  //   }));
-  //   validateField(name, type === 'checkbox' ? !!checked : value);
-  // };
-
   const validateField = (name: string, value: string | boolean) => {
     let error = ''
     switch (name) {
@@ -176,42 +167,6 @@ export function LandingPageComponent() {
       }
     }
   }
-
-  // const validateField = (name: string, value: string | boolean) => {
-  //   let error = ''
-  //   switch (name) {
-  //     case 'name':
-  //       if (typeof value === 'string' && !value.trim()) error = 'Необходимо ваше имя'
-  //       break
-  //     case 'email':
-  //       if (typeof value === 'string' && value && !/\S+@\S+\.\S+/.test(value)) {
-  //         error = 'Некорректный адрес эл. почты'
-  //       }
-  //       break
-  //     case 'phone':
-  //       if (typeof value === 'string' && value && !/^\+?[1-9]\d{1,14}$/.test(value)) {
-  //         error = 'Некорректный номер телефона'
-  //       }
-  //       break
-  //     case 'agreeToTerms':
-  //       if (!value) error = 'Вы должны принять согласие на обработку персональных данных'
-  //       break
-  //     default:
-  //       break
-  //   }
-  //   setFormErrors(prev => ({ ...prev, [name]: error }))
-
-  //   if (name === 'email' || name === 'phone') {
-  //     const otherField = name === 'email' ? 'phone' : 'email'
-  //     const otherValue = formData[otherField as 'email' | 'phone']
-  //     if (!value && !otherValue) {
-  //       setFormErrors(prev => ({ ...prev, contactMethod: 'Необходим телефонный номер или адрес эл. почты' }))
-  //     } else {
-  //       setFormErrors(prev => ({ ...prev, contactMethod: '' }))
-  //     }
-  //   }
-  // };
-    
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
