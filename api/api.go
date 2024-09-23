@@ -11,10 +11,13 @@ import (
 	"api/internal/env"
 	smtp "api/internal/smtp"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
 )
+
+var validate *validator.Validate
 
 type (
 	SmtpContext struct {
@@ -26,11 +29,11 @@ type (
 	SubmittedForm struct {
 		ID           int
 		Name         string `json:"name"`
-		Company      string `json:"company"`
-		Email        string `json:"email"`
+		Company      string `json:"companyName"`
+		Email        string `json:"email" validate:"required,email"`
 		Phone        string `json:"phone"`
-		Comment      string `json:"comment"`
-		IsAgree      bool   `json:"isAgree"`
+		Comment      string `json:"message"`
+		IsAgree      bool   `json:"agreeToTerms"`
 		CreationDate string `json:"creationDate"`
 	}
 )
@@ -76,18 +79,20 @@ func validateForm(form *SubmittedForm) error {
 func submitForm(c echo.Context) error {
 	cc := c.(*SmtpContext)
 
+	validate = validator.New(validator.WithRequiredStructEnabled())
+
 	var form *SubmittedForm = &SubmittedForm{}
 	if err := c.Bind(form); err != nil {
 		log.Printf("submit, binding error: %s", err)
 		return err
 	}
 
-	loc, err := time.LoadLocation("Asia/Yekaterinburg")
-	if err != nil {
-		log.Printf("loadlocation error: %s", err)
+	if err := validate.Struct(form); err != nil {
+		log.Printf("struct validation error: %s", err)
+		return c.JSON(http.StatusBadRequest, form)
 	}
 
-	current_time := time.Now().In(loc).Format("15:04 02.01.2006")
+	current_time := time.Now().Add(time.Hour * 5).Format("15:04 02.01.2006")
 	form.CreationDate = current_time
 
 	if err := validateForm(form); err != nil {
@@ -97,6 +102,7 @@ func submitForm(c echo.Context) error {
 
 	if err := sendForm(form, cc.smtp, cc.smtpBase); err != nil {
 		log.Printf("send form: %s", err)
+		return c.JSON(http.StatusInternalServerError, form)
 	}
 
 	return c.JSON(http.StatusCreated, form)
@@ -152,10 +158,6 @@ func main() {
 			cc := &SmtpContext{c, smtpMail, smtpBase}
 			return h(cc)
 		}
-	})
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "hello, world!")
 	})
 
 	e.POST("/submit", submitForm)
